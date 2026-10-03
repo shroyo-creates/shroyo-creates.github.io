@@ -20,10 +20,6 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: "Fira Code", Consolas, "Courier New", monospace;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   padding: 16px;
 }
 
@@ -77,4 +73,36 @@ body {
   color: var(--text);
   font: inherit;
   caret-color: var(--green);
+}
+/* --- Hide the scrollbar but keep scrolling --- */
+html {
+  scrollbar-width: none;            /* Firefox */
+}
+html::-webkit-scrollbar {
+  display: none;                    /* Chrome, Edge, Safari */
+}
+
+/* --- Layer 1: fixed background --- */
+#bg {
+  position: fixed;   /* stays put while the page scrolls */
+  inset: 0;          /* shorthand for top/right/bottom/left: 0 = full screen */
+  z-index: -1;       /* sits behind everything */
+}
+
+/* --- Layer 2: each section fills the screen --- */
+.panel {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 16px;
+}
+
+/* --- Layer 3: navbar floats on top --- */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  padding: 20px 32px;
 }
