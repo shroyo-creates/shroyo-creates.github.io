@@ -10,7 +10,3 @@ function raf(time) {
 }
 requestAnimationFrame(raf);
 
-// 3. Prove we can read the scroll position (Step 4 uses this to move the 3D scene)
-lenis.on("scroll", (e) => {
-  console.log("scrolled:", Math.round(e.scroll), "px");
-});

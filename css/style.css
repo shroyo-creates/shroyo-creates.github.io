@@ -20,7 +20,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: "Fira Code", Consolas, "Courier New", monospace;
-  padding: 16px;
+  
 }
 
 /* 4. The terminal window */
@@ -83,10 +83,18 @@ html::-webkit-scrollbar {
 }
 
 /* --- Layer 1: fixed background --- */
+/* --- Layer 1: fixed background --- */
 #bg {
-  position: fixed;   /* stays put while the page scrolls */
-  inset: 0;          /* shorthand for top/right/bottom/left: 0 = full screen */
-  z-index: -1;       /* sits behind everything */
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;   /* clicks pass through to the page */
+}
+
+/* --- Layer 2: content sits above the canvas --- */
+.content {
+  position: relative;
+  z-index: 1;
 }
 
 /* --- Layer 2: each section fills the screen --- */
