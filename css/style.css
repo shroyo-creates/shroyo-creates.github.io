@@ -1,116 +1,273 @@
-/* 1. Color variables: change the theme in one place */
+  /* 1. Color and font variables: change the theme in one place */
 :root {
-  --bg: #0d1117;
-  --terminal-bg: #161b22;
-  --text: #c9d1d9;
-  --green: #3fb950;
-  --blue: #58a6ff;
-  --border: #30363d;
+  /* surfaces: deep space navy */
+  --bg: #05060f;
+  --terminal-bg: #0b0d1f;
+  --surface: #13163a;
+  --border: #23284f;
+
+  /* text */
+  --text: #e8eaff;
+  --muted: #8f94bd;
+
+  /* galaxy colors (named by ROLE) */
+  --accent: #8b5cf6;     /* violet - main highlight */
+  --accent-2: #3b82f6;   /* blue   - second highlight */
+  --accent-3: #ec4899;   /* pink   - tiny touches only */
+  --soft: #a5b4fc;       /* pale indigo - gentle highlight */
+
+  --gradient: linear-gradient(90deg, var(--accent-2), var(--accent), var(--soft), var(--accent-2));
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, monospace;
 }
 
 /* 2. Reset browser default spacing */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* 3. Page: center the terminal */
+/* 3. Page */
 body {
-  background: var(--bg);
+  /* nebula: soft colored clouds painted behind the 3D canvas */
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 20%, rgba(59, 130, 246, 0.18), transparent 70%),
+    radial-gradient(ellipse 50% 45% at 85% 75%, rgba(139, 92, 246, 0.22), transparent 70%),
+    radial-gradient(ellipse 35% 30% at 70% 15%, rgba(236, 72, 153, 0.10), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
   color: var(--text);
-  font-family: "Fira Code", Consolas, "Courier New", monospace;
-  
+  font-family: var(--font-sans);
 }
 
-/* 4. The terminal window */
-.terminal {
-  width: 100%;
-  max-width: 900px;
-  height: 80vh;
-  background: var(--terminal-bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* 5. Title bar with the 3 dots */
-.terminal-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: #21262d;
-  border-bottom: 1px solid var(--border);
-}
-.dot { width: 12px; height: 12px; border-radius: 50%; }
-.red { background: #ff5f56; }
-.yellow { background: #ffbd2e; }
-.green { background: #27c93f; }
-.terminal-title { margin-left: auto; margin-right: auto; font-size: 13px; opacity: 0.7; }
-
-/* 6. Body: where output appears */
-.terminal-body {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  line-height: 1.7;
-  font-size: 15px;
-}
-.highlight { color: var(--blue); }
-
-/* 7. The input line */
-.input-line { display: flex; gap: 10px; margin-top: 10px; }
-.prompt { color: var(--green); white-space: nowrap; }
-#command-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font: inherit;
-  caret-color: var(--green);
-}
 /* --- Hide the scrollbar but keep scrolling --- */
-html {
-  scrollbar-width: none;            /* Firefox */
-}
-html::-webkit-scrollbar {
-  display: none;                    /* Chrome, Edge, Safari */
-}
+html { scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }
 
 /* --- Layer 1: fixed background --- */
-/* --- Layer 1: fixed background --- */
-#bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;   /* clicks pass through to the page */
-}
+#bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
 /* --- Layer 2: content sits above the canvas --- */
-.content {
-  position: relative;
-  z-index: 1;
-}
-
-/* --- Layer 2: each section fills the screen --- */
+.content { position: relative; z-index: 1; }
 .panel {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
   padding: 80px 16px;
 }
 
-/* --- Layer 3: navbar floats on top --- */
+/* ===== STEP 5: progress bar ===== */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  z-index: 20;
+}
+
+/* ===== STEP 5: navbar ===== */
 .navbar {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1100px, calc(100% - 32px));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  border: 1px solid transparent;
+  border-radius: 999px;
   z-index: 10;
-  padding: 20px 32px;
+  transition: background 0.3s, border-color 0.3s;
+}
+.navbar.scrolled {
+  background: rgba(5, 6, 15, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+.logo span { color: var(--accent); }
+
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a {
+  position: relative;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -6px;
+  width: 100%; height: 2px;
+  background: var(--gradient);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+.nav-links a:hover,
+.nav-links a.active { color: var(--text); }
+.nav-links a:hover::after,
+.nav-links a.active::after { transform: scaleX(1); }
+
+/* ===== STEP 5: hero ===== */
+.hero { position: relative; text-align: center; }
+
+/* soft dark glow behind the text so it stays readable over the 3D */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(5, 6, 15, 0.75) 0%, transparent 60%);
+  z-index: -1;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  margin-bottom: 16px;
+}
+.hero-name {
+  font-size: clamp(3rem, 11vw, 7.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  background: var(--gradient);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 8s linear infinite;
+}
+@keyframes shine {
+  to { background-position: 200% center; }
+}
+.hero-typing {
+  font-family: var(--font-mono);
+  font-size: clamp(1.05rem, 2.6vw, 1.6rem);
+  margin-top: 24px;
+  min-height: 1.5em;               /* stops the page jumping while text changes */
+}
+.typed { color: var(--soft); }
+.cursor {
+  color: var(--accent);
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+.hero-tagline {
+  color: var(--muted);
+  margin-top: 12px;
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+}
+
+.hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+}
+.btn {
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, color 0.2s;
+}
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  color: var(--bg);
+}
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
+}
+.btn-ghost {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+.btn-ghost:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.mouse {
+  width: 24px; height: 38px;
+  border: 2px solid var(--muted);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+.wheel {
+  width: 4px; height: 8px;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: wheel 1.6s ease-in-out infinite;
+}
+@keyframes wheel {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(12px); opacity: 0; }
+}
+
+/* ===== Terminal (from Step 2) ===== */
+.terminal {
+  width: 100%; max-width: 900px; height: 80vh;
+  background: var(--terminal-bg); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  display: flex; flex-direction: column; overflow: hidden;
+  font-family: var(--font-mono);
+}
+.terminal-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
+.terminal-title { margin-left: auto; margin-right: auto; font-size: 13px; opacity: 0.7; }
+.terminal-body { flex: 1; padding: 20px; overflow-y: auto; line-height: 1.7; font-size: 15px; }
+.highlight { color: var(--soft); }
+.input-line { display: flex; gap: 10px; margin-top: 10px; }
+.prompt { color: var(--accent); white-space: nowrap; }
+#command-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font: inherit; caret-color: var(--accent); }
+
+/* ===== Small screens ===== */
+@media (max-width: 640px) {
+  .navbar { padding: 10px 16px; }
+  .logo { font-size: 1.2rem; }
+  .nav-links { gap: 14px; }
+  .nav-links a { font-size: 0.8rem; }
+}
+
+/* ===== Respect "reduce motion" ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

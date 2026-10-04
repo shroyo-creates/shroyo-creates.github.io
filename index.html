@@ -4,52 +4,72 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SHREYA PANDEY | Security & Software Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.css">
   <link rel="stylesheet" href="css/style.css">
-</head> 
+</head>
 <body>
-  <!-- Layer 1: 3D background (we'll draw on it in Step 4) -->
-  <canvas id="bg"></canvas>
-  
+  <!-- Scroll progress bar -->
+  <div class="progress-bar" id="progress-bar"></div>
 
-  
+  <!-- Layer 1: 3D background -->
+  <canvas id="bg"></canvas>
 
   <!-- Layer 3: navbar -->
-  <nav class="navbar">SP.</nav>
+  <header class="navbar" id="navbar">
+    <a href="index.html" class="logo">SP<span>.</span></a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active" aria-current="page">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="skills.html">Skills</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
 
   <!-- Layer 2: scrolling content -->
   <main class="content">
-    <section class="panel" id="hero"><h1>Hi, I'm Shreya Pandey</h1></section>
+    <section class="panel hero" id="hero">
+      <p class="eyebrow">&gt; hello world, I'm</p>
+      <h1 class="hero-name">Shreya Pandey</h1>
+      <p class="hero-typing">I build <span id="typed" class="typed"></span><span class="cursor" aria-hidden="true">|</span></p>
+      <p class="hero-tagline">3rd-year CS student · Cybersecurity · Python · C++ · Java</p>
+      <div class="hero-buttons">
+        <a href="#projects" class="btn btn-primary">View Projects</a>
+        <a href="#terminal-section" class="btn btn-ghost">Open Terminal &gt;_</a>
+      </div>
+      <a href="#about" class="scroll-hint" aria-label="Scroll down">
+        <span class="mouse"><span class="wheel"></span></span>
+        Scroll
+      </a>
+    </section>
     <section class="panel" id="about"><h2>About</h2></section>
     <section class="panel" id="projects"><h2>Projects</h2></section>
     <section class="panel" id="terminal-section">
       <div class="terminal">
-    <div class="terminal-header">
-      <span class="dot red"></span>
-      <span class="dot yellow"></span>
-      <span class="dot green"></span>
-      <span class="terminal-title">shreya@portfolio: ~</span>
-    </div>
-    </div> 
-
-    <div class="terminal-body" id="terminal-body">
-      <p>Welcome to Shreya Pandey's portfolio 👋</p>
-      <p>Type <span class="highlight">help</span> to see available commands.</p>
-
-      <div class="input-line">
-        <span class="prompt">shreya@portfolio:~$</span>
-        <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
+        <div class="terminal-header">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="terminal-title">shreya@portfolio: ~</span>
+        </div>
+        <div class="terminal-body" id="terminal-body">
+          <p>Welcome to Shreya Pandey's portfolio 👋</p>
+          <p>Type <span class="highlight">help</span> to see available commands.</p>
+          <div class="input-line">
+            <span class="prompt">shreya@portfolio:~$</span>
+            <input type="text" id="command-input" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
       </div>
-    </div>
-  
     </section>
   </main>
-  <!-- Smooth scroll library (loaded before your own JS) -->
-  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
   <script src="js/main.js"></script>
   <script src="js/terminal.js"></script>
   <script type="module" src="js/background.js"></script>
 </body>
-
 </html>

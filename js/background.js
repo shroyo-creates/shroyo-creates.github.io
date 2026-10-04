@@ -8,12 +8,13 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x0d1117, 0.07); // far-away things fade into the background
+scene.fog = new THREE.FogExp2(0x05060f, 0.07); // far-away things fade into the background
 
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
 camera.position.z = 8;
+
 // ---------- 2. The particle network ----------
-const COUNT = 200;      // number of dots
+const COUNT = 400;      // number of dots
 const RADIUS = 6;       // size of the cloud
 const LINK_DIST = 1.6;  // dots closer than this get a line between them
 
@@ -38,9 +39,18 @@ function makeGlowTexture() {
   return new THREE.CanvasTexture(c);
 }
 
+// Give every dot its own galaxy color (mostly blue and violet, a few pink)
+const palette = [0x60a5fa, 0x60a5fa, 0x8b5cf6, 0x8b5cf6, 0xf472b6].map((hex) => new THREE.Color(hex));
+const colors = [];
+for (let i = 0; i < COUNT; i++) {
+  const c = palette[Math.floor(Math.random() * palette.length)];
+  colors.push(c.r, c.g, c.b);
+}
+
 const dotGeometry = new THREE.BufferGeometry().setFromPoints(points);
+dotGeometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
 const dotMaterial = new THREE.PointsMaterial({
-  color: 0x58a6ff,
+  vertexColors: true,   // use each dot's own color instead of one color for all
   size: 0.18,
   map: makeGlowTexture(),
   transparent: true,
@@ -59,18 +69,41 @@ for (let i = 0; i < COUNT; i++) {
   }
 }
 const lineGeometry = new THREE.BufferGeometry().setFromPoints(linePoints);
-const lineMaterial = new THREE.LineBasicMaterial({ color: 0xa371f7, transparent: true, opacity: 0.25 });
+const lineMaterial = new THREE.LineBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0.2 });
 const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
 
 const network = new THREE.Group();
 network.add(dots, lines);
 scene.add(network);
+
 // ---------- 3. The glowing "shield core" in the middle ----------
 const core = new THREE.Mesh(
   new THREE.IcosahedronGeometry(1.3, 1),
-  new THREE.MeshBasicMaterial({ color: 0x3fb950, wireframe: true, transparent: true, opacity: 0.35 })
+  new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true, transparent: true, opacity: 0.35 })
 );
 scene.add(core);
+
+// ---------- 3b. Distant starfield ----------
+const STAR_COUNT = 1500;
+const starPositions = [];
+for (let i = 0; i < STAR_COUNT; i++) {
+  const s = new THREE.Vector3().randomDirection().multiplyScalar(30 + Math.random() * 30);
+  starPositions.push(s);
+}
+const stars = new THREE.Points(
+  new THREE.BufferGeometry().setFromPoints(starPositions),
+  new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 0.3,
+    map: makeGlowTexture(),
+    transparent: true,
+    opacity: 0.8,
+    depthWrite: false,
+    fog: false,          // stars are far away, but we still want to see them
+  })
+);
+scene.add(stars);
+
 // ---------- 4. Inputs: scroll and mouse ----------
 let scrollProgress = 0; // 0 at the top of the page, 1 at the very bottom
 function updateScroll() {
@@ -101,6 +134,9 @@ function animate() {
 
   // Camera flies INTO the network as you scroll (z goes from 8 to 3.5)
   camera.position.z = 8 - scrollProgress * 4.5;
+
+  // Stars drift very slowly in the opposite direction (gives depth)
+  stars.rotation.y = -t * 0.01 - scrollProgress * 0.5;
 
   // Camera drifts gently toward the mouse ("lerp" = move 5% of the way each frame)
   camera.position.x += (mouse.x * 1.5 - camera.position.x) * 0.05;
